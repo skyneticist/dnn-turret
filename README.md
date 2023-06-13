@@ -23,3 +23,9 @@ Note:
 
 There are several flags and user-definable properties that can be set when calling the python `main.py` script.
 These can be found near the bottom of the `main.py` file.
+
+Example:
+
+```
+python main.py -w -r (1200, 900) -c 85 -p <path/to/different/prototxt_file> -m <path/to/other/caffe_model_file> 
+```
