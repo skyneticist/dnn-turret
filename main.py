@@ -175,7 +175,7 @@ if __name__ == "__main__":
     args = vars(ap.parse_args())
 
     # global
-    # write to arduino only when detecting
+    # write to uController only when detecting
     face_detecting: bool = False
 
     main()
