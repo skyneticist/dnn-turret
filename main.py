@@ -10,9 +10,9 @@ from threading import Thread
 
 
 def serial_init():
-    # establish connection with arduino via serial (USB)
+    # establish connection with microcontroller via serial (USB)
     print("connecting to uController...")
-    arduino = serial.Serial(port='COM4', baudrate=115200, timeout=.1)
+    uContoller = serial.Serial(port='COM4', baudrate=115200, timeout=.1)
     time.sleep(2.0)
     print("connected!")
 
@@ -23,7 +23,7 @@ def write_cv_data(q) -> None:
         if face_detecting:
             # float ?
             data: float = q.get()
-            # arduino.write(bytes(data, 'utf-8'))
+            # uController.write(bytes(data, 'utf-8'))
             time.sleep(0.01)  # need to test for best value
         else:
             # clear the LIFO queue if no longer
