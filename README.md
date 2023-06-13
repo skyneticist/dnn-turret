@@ -6,7 +6,7 @@ Deep Neural Network OpenCV Face Tracking test for auto turret
 - Work In Progress, but does run without any headache
 
 Simple to run:
-
+_BUT, it should be noted that it is best practice to have a python or conda (preferred) virtual environment set up and activated before running the pip install command_
 
 ```Bash
 git clone https://github.com/skyneticist/dnn-turret/
