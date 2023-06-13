@@ -1,7 +1,7 @@
 # dnn-turret
 Deep Neural Network OpenCV Face Tracking test for auto turret
 
-This is one part of two 🥨
+This is one part of two 🥨 <br>
 Companion code for microcontroller: https://github.com/skyneticist/pico-turret-pio
 
 - Uses Python Threading class to achieve ~115% gain in frames per second
