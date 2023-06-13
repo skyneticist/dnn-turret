@@ -1,6 +1,10 @@
 # dnn-turret
 Deep Neural Network OpenCV Face Tracking test for auto turret
 
+This is one part of two 🥨
+
+    Companion code for microcontroller: https://github.com/skyneticist/pico-turret-pio
+
 - Uses Python Threading class to achieve ~115% gain in frames per second
 - Uses a LIFO queue to pass data to microcontroller via Threaded function
 - Work In Progress, but does run without any headache
@@ -25,8 +29,6 @@ Note:
 
 There are several flags and user-definable properties that can be set when calling the python `main.py` script.
 These can be found near the bottom of the `main.py` file.
-
-Example:
 
 ```
 python main.py -w -r (1200, 900) -c 85 -p <path/to/different/prototxt_file> -m <path/to/other/caffe_model_file> 
