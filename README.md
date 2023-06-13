@@ -11,6 +11,7 @@ Simple to run:
 ```Bash
 git clone https://github.com/skyneticist/dnn-turret/
 cd dnn-turret
+pip install -r requirements.txt
 python main.py
 ```
 
