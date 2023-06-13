@@ -12,7 +12,7 @@ from threading import Thread
 def serial_init():
     # establish connection with microcontroller via serial (USB)
     print("connecting to uController...")
-    uContoller = serial.Serial(port='COM4', baudrate=115200, timeout=.1)
+    uController = serial.Serial(port='COM4', baudrate=115200, timeout=.1)
     time.sleep(2.0)
     print("connected!")
 
