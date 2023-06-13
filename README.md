@@ -1,6 +1,10 @@
 # dnn-turret
 Deep Neural Network OpenCV Face Tracking test for auto turret
 
+- Uses Python Threading class to achieve ~115% gain in frames per second
+- Uses a LIFO queue to pass data to microcontroller via Threaded function
+- Work In Progress, but does run without any headache
+
 Simple to run:
 
 
