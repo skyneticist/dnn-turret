@@ -48,6 +48,8 @@ def main():
     cv2.namedWindow('processed_img', cv2.WINDOW_NORMAL)
     cv2.resizeWindow('processed_img', args["resize"][0], args["resize"][1])
 
+    print("dnn-turret is actively scanning...")
+
     # last in first out queue is essential for
     # efficient parity between threaded serial task
     # and main-threaded cv draw computations/updates
@@ -163,9 +165,9 @@ if __name__ == "__main__":
     ap.add_argument("-w", "--write", type=bool, required=False,
                     default=False, help="write to microcontroller")
     ap.add_argument("-p", "--prototxt", required=False,
-                    default="deploy.prototxt", help="path to Caffe 'deploy' prototxt file")
+                    default="dnn/deploy.prototxt", help="path to Caffe 'deploy' prototxt file")
     ap.add_argument("-m", "--model", required=False,
-                    default="300_300.caffemodel", help="path to Caffe pre-trained model")
+                    default="dnn/300_300.caffemodel", help="path to Caffe pre-trained model")
     ap.add_argument("-c", "--confidence", type=float, default=0.5,
                     help="minimum probability to filter out weak detections")
     ap.add_argument("-r", "--resize", type=tuple, required=False,
