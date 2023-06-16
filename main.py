@@ -1,6 +1,7 @@
 import numpy as np
 import argparse
 import time
+# import dlib
 import serial
 import cv2
 
@@ -9,12 +10,27 @@ from queue import LifoQueue
 from threading import Thread
 
 
-def serial_init():
-    # establish connection with microcontroller via serial (USB)
+# For clarity, the main function passes computed data into the LIFO queue,
+# which, in turn, is used within a function (write_cv_data) running in the threaded process.
+# There are no calls to the write_cv_data outside of being thread target as all data is handled
+# through the queue
+
+
+def compute_aggression(img, al):
+    width = 100
+    height = 200
+    fill_color = (5, 145, 66)
+    fill = int(img.shape[0] * al)
+    cv2.rectangle(img, (0, img.shape[1] - fill), (20, img.shape[0]), fill_color, -1)
+
+
+def serial_init() -> serial:
+    # establish connection with microcontroller via serial
     print("connecting to uController...")
-    uController = serial.Serial(port='COM4', baudrate=115200, timeout=.1)
+    uController = serial.Serial(baudrate=115200, timeout=.1)
     time.sleep(2.0)
     print("connected!")
+    return uController
 
 
 # only write when face_detecting is True
@@ -32,7 +48,7 @@ def write_cv_data(q) -> None:
                 q.queue.clear()
 
 
-def resize_img(img, height, width):
+def resize_img(img, height, width) -> any:
     dim = (width, height)
     return cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
 
@@ -45,32 +61,33 @@ def main():
     net = cv2.dnn.readNetFromCaffe(args["prototxt"], args["model"])
 
     print("creating named window and resizing it...")
-    cv2.namedWindow('processed_img', cv2.WINDOW_NORMAL)
-    cv2.resizeWindow('processed_img', args["resize"][0], args["resize"][1])
-
-    print("dnn-turret is actively scanning...")
+    cv2.namedWindow('output', cv2.WINDOW_NORMAL)
+    cv2.resizeWindow('output', args["resize"][0], args["resize"][1])
 
     # last in first out queue is essential for
     # efficient parity between threaded serial task
     # and main-threaded cv draw computations/updates
     q: LifoQueue = LifoQueue()
 
+    # print("starting thread for writing data...")
+    # th_ucontroller: Thread = Thread(target=write_cv_data, args=(q,))
+    # th_ucontroller.daemon = True
+    # th_ucontroller.start()
+
+    print("✅ system startup completed successfully")
+    print("dnn-turret is actively scanning...")
+
     # fps
     new_frame_time = 0
     last_frame_time = 0
 
     # data check
-    prevData: str = ""
+    previous_data: str = ""
 
+    # init center circle size
     dynamic_centroid_diameter = 1
 
-    # create a separate thread to handle
-    # sending serial updates via write_cv_data method
-    if args["write"]:
-        serial_init()
-        th_ucontroller: Thread = Thread(target=write_cv_data, args=(q,))
-        th_ucontroller.daemon = True
-        th_ucontroller.start()
+    bbb = []
 
     while 1:
         img = vs.read()
@@ -83,7 +100,7 @@ def main():
         # putting the FPS count on the frame
         cv2.putText(img, str(fps), (7, 70), cv2.FONT_HERSHEY_SIMPLEX,
                     3, (100, 255, 0), 3, cv2.LINE_AA)
-
+        
         # get the center of the frame/img
         (h, w) = img.shape[:2]
         frame_center_xy = (w//2, h//2)
@@ -97,8 +114,11 @@ def main():
         net.setInput(blob)
         detections = net.forward()
 
+        bbb.clear()
+        
         for i in range(0, detections.shape[2]):
             face_detecting = True
+
             confidence = detections[0, 0, i, 2]
 
             if confidence < args["confidence"]:
@@ -109,24 +129,39 @@ def main():
 
             box_width = endX - startX
             box_height = endY - startY
+            average_box_size = (box_width + box_height) / 2
 
-            bboxes = np.shape((30, 1))
-            np.append(bboxes, box_width + box_height)
-            closest_bbox = np.max(bboxes)
+            compute_aggression(img, average_box_size / 500.0)
 
-            bbox_color = (0, 50, 200) if closest_bbox is box_width + \
-                box_height else (200, 25, 10)
+            bbb.append(box)
+            bboxes = np.array(bbb)
+            # print("bboxes: {}".format(bboxes))
+            np.append(bboxes, average_box_size)
+
+            # closest_bbox = np.max(bboxes)
+            # print("Closest bBox: {}".format(closest_bbox))
+
+            # bbox_color = (10, 15, 225)
+            # if bboxes.size > 0:
+            #     if closest_bbox == bboxes.choose(closest_bbox):
+            #         bbox_color = (255, 255, 255)
+            #     else:
+            #         bbox_color = (200, 25, 10)
+            # print(np.where(bboxes == closest_bbox))
+
+            bbox_color = (255, 255 - (average_box_size / 10) + 1, 255)
 
             box_center_x = int((endX + startX)/2)
             box_center_y = int((endY + startY)/2)
 
             # serial data sent to arduino
             data: str = "X{0:d}Y{1:d}Z".format(box_center_x, box_center_y)
+            # print("data: {}".format(data))
 
             # if data is different, put data in LIFO queue
-            if data != prevData:
+            if data != previous_data:
                 q.put(data)
-                prevData = data
+                previous_data = data
 
             confidence_text = "{:2f}%".format(confidence * 100)
             x = startX - 10 if startX - 10 > 10 else startX + 10
@@ -171,11 +206,11 @@ if __name__ == "__main__":
     ap.add_argument("-c", "--confidence", type=float, default=0.5,
                     help="minimum probability to filter out weak detections")
     ap.add_argument("-r", "--resize", type=tuple, required=False,
-                    default=(400, 300), help="height and width dimensions of frame")
+                    default=(400, 400), help="height and width dimensions of frame")
     args = vars(ap.parse_args())
 
-    # global
-    # write to uController only when detecting
-    face_detecting: bool = False
+    # globals
+    uController = serial_init() if args["write"] else None
+    face_detecting = False  # write to uController only when detecting
 
     main()
