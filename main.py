@@ -1,7 +1,7 @@
 import numpy as np
 import argparse
 import time
-# import dlib
+import dlib
 import serial
 import cv2
 
@@ -74,6 +74,8 @@ def main():
     # th_ucontroller.daemon = True
     # th_ucontroller.start()
 
+    face_tracker = dlib.correlation_tracker()
+
     print("✅ system startup completed successfully")
     print("dnn-turret is actively scanning...")
 
@@ -127,6 +129,18 @@ def main():
             box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
             (startX, startY, endX, endY) = box.astype("int")
 
+            face_rect = dlib.rectangle(startX, startY, endX, endY)
+
+            face_tracker.start_track(img, face_rect)
+            face_tracker.update(img)
+
+            tracked_rect = face_tracker.get_position()
+
+            tracked_startX = int(tracked_rect.left())
+            tracked_startY = int(tracked_rect.top())
+            tracked_endX = int(tracked_rect.right())
+            tracked_endY = int(tracked_rect.bottom())
+
             box_width = endX - startX
             box_height = endY - startY
             average_box_size = (box_width + box_height) / 2
@@ -166,7 +180,8 @@ def main():
             confidence_text = "{:2f}%".format(confidence * 100)
             x = startX - 10 if startX - 10 > 10 else startX + 10
             y = startY - 10 if startY - 10 > 10 else startY + 10
-            cv2.rectangle(img, (startX, startY), (endX, endY), bbox_color, 2)
+            cv2.rectangle(img, (tracked_startX, tracked_startY), (tracked_endX, tracked_endY), bbox_color, 2)
+            # cv2.rectangle(img, (startX, startY), (endX, endY), bbox_color, 2)
             cv2.putText(img, confidence_text, (startX, y),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.65, (44, 0, 100), 2)
 
