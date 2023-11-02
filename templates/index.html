@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>icu</title>
+<style>
+  body {
+    /* background-image: url('https://68.media.tumblr.com/b85f7d06171a43eec004d0be2df7eafc/tumblr_ovrf25nuJ61urz3l2o1_500.gif'); */
+    /* background-image: url('https://127.0.0.1:8080/video_feed'); */
+    background-image: url('https://preview.redd.it/i-made-all-the-mgs-status-ui-and-there-is-the-version-for-v0-32icebkfmtcb1.gif?width=970&auto=webp&s=a376a63d3db9809898f215a4e9215a1ed84012ec');
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #2c3e50;
+  }
+  .camera-container {
+    border: 10px solid #333;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    background-color: black;
+    min-width: 900px;
+    min-height: 600px;
+  }
+  .camera-feed {
+    width: 900px;
+    height: 600px;
+    min-width: 600px;
+    min-height: 400px;
+    object-fit: cover;
+    color: #e74c3c;
+  }
+</style>
+</head>
+<body>
+  <div class="camera-container">
+    <img class="camera-feed" src="{{ url_for('video_feed') }}" >
+  </div>
+</body>
+</html>

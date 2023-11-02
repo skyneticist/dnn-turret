@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Television Screen Image</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: url('YOUR_IMAGE_URL') no-repeat center center fixed;
+            background-size: cover;
+        }
+        .tv-screen {
+            border: 20px solid black;
+            border-radius: 20px;
+            max-width: 60%;
+        }
+        .tv-screen img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="tv-screen">
+        <img src="YOUR_IMAGE_URL" alt="Image">
+    </div>
+</body>
+</html>

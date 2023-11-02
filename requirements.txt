@@ -1,3 +1,7 @@
 numpy==1.24.3
+Flask==2.0.2
 pyserial==3.5
 opencv-python==4.7.0.72
+Jinja2==3.0.2
+MarkupSafe==2.0.1
+Werkzeug==2.0.2
